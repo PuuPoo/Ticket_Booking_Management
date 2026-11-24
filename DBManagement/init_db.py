@@ -8,7 +8,7 @@ load_dotenv()
 
 DB_NAME = "Ticket_Booking_System"
 SQL_FILE = "DBManagement/DBSchema.sql"
-#DATA_FILE = "src/sample_data_mysql.sql"
+DATA_FILE = "DBManagement/DBSampleData.sql"
 
 config = {
     "user": os.getenv("MYSQL_USER"),
@@ -98,7 +98,7 @@ def create_tables(connection, sql_file):
     finally:
         cursor.close()
 
-""""
+
 def add_sample_data(connection, data_file):
     cursor = connection.cursor()
     with open(data_file, "r", encoding="utf-8") as file:
@@ -117,13 +117,13 @@ def add_sample_data(connection, data_file):
         connection.rollback()
     finally:
         cursor.close()
-"""
+
 
 if __name__ == "__main__":
     connection = mysql.connector.connect(**config)
     try:
         setup_database(connection, DB_NAME)
         create_tables(connection, SQL_FILE)
-        #add_sample_data(connection, DATA_FILE)
+        add_sample_data(connection, DATA_FILE)
     finally:
         connection.close()

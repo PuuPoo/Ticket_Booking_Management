@@ -1,14 +1,14 @@
 -- MYSQL DATABASE DATA TABLES SCHEMA
 
-create table 'Screen_Type'(
+create table Screen_Type(
     screenTypeID        int auto_increment primary key,
     theatreScreenName   varchar(100) not null unique,
-    priceMultiplier     decimal(2, 2) not null
+    priceMultiplier     decimal(3, 2) not null
 );
 
 
 
-create table 'Theatre'(
+create table Theatre(
     theatreID           int auto_increment primary key,
     theatreName         varchar(100) not null,
     address             varchar(255) not null unique,
@@ -17,16 +17,17 @@ create table 'Theatre'(
 );
 
 
-create table 'Theatre_Screen'(
-    theatreScreenID     int auto_increment primary key,
-    screenCount         int not null,
+create table Studio(
+    studioID            int auto_increment primary key,
+    theatreID           int not null,
+    screenTypeID        int not null,
     seatCapacity        int not null,
 
 
-    constraint FK_Theatre_Screen_Theatre 
+    constraint FK_Studio_Theatre 
         foreign key (theatreID) references Theatre(theatreID),
 
-    constraint FK_Theatre_Screen_Screen_Type
+    constraint FK_Studio_Screen_Type
         foreign key (screenTypeID) references Screen_Type(screenTypeID)
     
 );
@@ -35,19 +36,21 @@ create table 'Theatre_Screen'(
 
 
 
-create table 'Movie'(
+create table Movie(
     movieID             int auto_increment primary key,
     title               varchar(100) not null,
     genre               varchar(100) not null,
     duration            time not null,
-    rating              int not null,
-    basePrice           decimal(3, 2) not null
+    rating              varchar(10) not null,
+    basePrice           decimal(8, 2) not null
 );
 
 
 
-create table 'Showtime'(
+create table Showtime(
     showtimeID         int auto_increment primary key,
+    movieID             int not null,
+    studioID            int not null,
     startTime          datetime not null,
     endTime            datetime not null,
 
@@ -55,15 +58,15 @@ create table 'Showtime'(
     constraint FK_Showtime_MovieID
         foreign key (movieID) references Movie(movieID),
 
-    constraint FK_Showtime_Theatre_Screen_ID
-        foreign key (theatreScreenID) references Theatre_Screen(theatreScreenID)
-)
+    constraint FK_Showtime_Studio_ID
+        foreign key (studioID) references Studio(studioID)
+);
 
 
 
 
 
-create table 'Customer'(
+create table Customer(
     customerID         int auto_increment primary key,
     customerName       varchar(255) not null,
     email              varchar(255) not null unique
@@ -71,8 +74,10 @@ create table 'Customer'(
 
 
 
-create table 'Ticket'(
+create table Ticket(
     ticketID          int auto_increment primary key,
+    customerID        int not null,
+    showtimeID        int not null,
     seatNumber        varchar(255) not null,
 
 
@@ -81,23 +86,28 @@ create table 'Ticket'(
 
 
     constraint FK_Ticket_Showtime_ID
-        foreign key (showtimeID) references Showtime(showtimeID)
+        foreign key (showtimeID) references Showtime(showtimeID),
+
+    constraint Unique_Ticket_Seat
+        unique (showtimeID, seatNumber)
 );
 
 
 
 
-create table 'Concession_Type'(
+create table Concession_Type(
     concessionTypeID   int auto_increment primary key,
     concessionName     varchar(255) not null unique,
-    price              decimal(3, 2) not null
+    price              decimal(8, 2) not null
 );
 
 
 
 
-create table 'Concession_Purchase'(
+create table Concession_Purchase(
     concessionPurchaseID    int auto_increment primary key,
+    ticketID                int not null,
+    concessionTypeID        int not null,
     quantity                int not null, 
 
 
@@ -112,12 +122,15 @@ create table 'Concession_Purchase'(
 
 
 
-create table 'Payment'(
+create table Payment(
     paymentID             int auto_increment primary key,
-    price                 decimal(3, 2) not null,
+    ticketID              int not null,
+    price                 decimal(8, 2) not null,
     paymentMethod         varchar(255) not null,
     paymentStatus         varchar(255) not null,
-    paidAt                datetime not null,
+    paidAt                datetime null,
+    createdAt             datetime not null default current_timestamp,
+    updatedAt             datetime not null default current_timestamp on update current_timestamp,
 
 
     constraint FK_Payment_TicketID
