@@ -2,6 +2,7 @@
 
 create table Screen_Type(
     screenTypeID        int auto_increment primary key,
+    screenCode          varchar(10) null unique,
     theatreScreenName   varchar(100) not null unique,
     priceMultiplier     decimal(3, 2) not null
 );
@@ -10,6 +11,7 @@ create table Screen_Type(
 
 create table Theatre(
     theatreID           int auto_increment primary key,
+    theatreCode     varchar(10) null unique,
     theatreName         varchar(100) not null,
     address             varchar(255) not null unique,
     openTime            time not null, 
@@ -19,6 +21,7 @@ create table Theatre(
 
 create table Studio(
     studioID            int auto_increment primary key,
+    studioCode          varchar(10) null unique,
     theatreID           int not null,
     screenTypeID        int not null,
     seatCapacity        int not null,
@@ -38,6 +41,7 @@ create table Studio(
 
 create table Movie(
     movieID             int auto_increment primary key,
+    movieCode           varchar(10) null unique,
     title               varchar(100) not null,
     genre               varchar(100) not null,
     duration            time not null,
@@ -48,11 +52,12 @@ create table Movie(
 
 
 create table Showtime(
-    showtimeID         int auto_increment primary key,
+    showtimeID          int auto_increment primary key,
+    showtimeCode        varchar(10) null unique,
     movieID             int not null,
     studioID            int not null,
-    startTime          datetime not null,
-    endTime            datetime not null,
+    startTime           datetime not null,
+    endTime             datetime not null,
 
 
     constraint FK_Showtime_MovieID
@@ -67,18 +72,20 @@ create table Showtime(
 
 
 create table Customer(
-    customerID         int auto_increment primary key,
-    customerName       varchar(255) not null,
-    email              varchar(255) not null unique
+    customerID          int auto_increment primary key,
+    customerCode        varchar(10) null unique,
+    customerName        varchar(255) not null,
+    email               varchar(255) not null unique
 );
 
 
 
 create table Ticket(
-    ticketID          int auto_increment primary key,
-    customerID        int not null,
-    showtimeID        int not null,
-    seatNumber        varchar(255) not null,
+    ticketID            int auto_increment primary key,
+    ticketCode          varchar(10) null unique,
+    customerID          int not null,
+    showtimeID          int not null,
+    seatNumber          varchar(255) not null,
 
 
     constraint FK_Ticket_CustomerID
@@ -96,19 +103,21 @@ create table Ticket(
 
 
 create table Concession_Type(
-    concessionTypeID   int auto_increment primary key,
-    concessionName     varchar(255) not null unique,
-    price              decimal(8, 2) not null
+    concessionTypeID            int auto_increment primary key,
+    concessionTypeCode          varchar(10) null unique,
+    concessionName              varchar(255) not null unique,
+    price                       decimal(8, 2) not null
 );
 
 
 
 
 create table Concession_Purchase(
-    concessionPurchaseID    int auto_increment primary key,
-    ticketID                int not null,
-    concessionTypeID        int not null,
-    quantity                int not null, 
+    concessionPurchaseID            int auto_increment primary key,
+    concessionPurchaseCode          varchar(10) null unique,
+    ticketID                        int not null,
+    concessionTypeID                int not null,
+    quantity                        int not null, 
 
 
 
@@ -124,6 +133,7 @@ create table Concession_Purchase(
 
 create table Payment(
     paymentID             int auto_increment primary key,
+    paymentCode           varchar(10) null unique,
     ticketID              int not null,
     price                 decimal(8, 2) not null,
     paymentMethod         varchar(255) not null,
